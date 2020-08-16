@@ -10,7 +10,19 @@ SensorReader::SensorReader(QObject *parent) : QObject(parent)
 
 void SensorReader::start()
 {
-    m_timer.start(5000);
+    m_timer.setSingleShot(true);
+    QTime time = QTime::currentTime();
+    QDate date = QDate::currentDate();
+    QDateTime ts;
+    if (time.second() >= 10) {
+        time.setHMS(time.hour(),time.minute(),10);
+        ts = QDateTime(date,time);
+        ts = ts.addSecs(60);
+    } else {
+        time.setHMS(time.hour(),time.minute(),10);
+        ts = QDateTime(date,time);
+    }
+    m_timer.start(QDateTime::currentDateTime().msecsTo(ts));
 }
 
 void SensorReader::stop()
@@ -39,6 +51,13 @@ void SensorReader::onTimer()
     if (data.size()) {
         emit dataRead(data);
     }
+
+    QTime time = QTime::currentTime();
+    QDate date = QDate::currentDate();
+    time.setHMS(time.hour(),time.minute(),10);
+    ts = QDateTime(date,time);
+    ts = ts.addSecs(60);
+    m_timer.start(QDateTime::currentDateTime().msecsTo(ts));
 }
 
 bool SensorReader::getValue(const SensorConfig& sensor_cfg, int &dest)

@@ -5,6 +5,7 @@
 #include <QVector>
 #include <QtSql/QSqlDatabase>
 #include <QTimer>
+#include <QMap>
 
 #include "sensordata.h"
 
@@ -27,7 +28,7 @@ public slots:
 private:
     QSqlDatabase m_db;
     QVector<SensorConfig> getSensorsCfg();
-
+    QMap<int,int> m_sensor2location;
 };
 
 #endif // DBFEEDER_H

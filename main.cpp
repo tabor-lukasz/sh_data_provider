@@ -18,6 +18,7 @@ int main(int argc, char*argv[])
 
     QObject::connect(&reader,&SensorReader::dataRead,&feeder,&DBFeeder::onDataReady);
     QObject::connect(&feeder,&DBFeeder::sensorsConfigRead,&reader,&SensorReader::onSensorConfig);
+    QObject::connect(&feeder,&DBFeeder::sensorsConfigRead,&server,&HttpServer::onSensorConfig);
     QObject::connect(&reader,&SensorReader::dataRead,&server,&HttpServer::onDataRead);
 
     if (feeder.connect()) {

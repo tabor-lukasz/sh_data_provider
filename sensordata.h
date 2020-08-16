@@ -12,6 +12,7 @@ struct SensorConfig {
     int id;
     QString identifier;
     SensorType type;
+    QString location;
 };
 
 struct SensorData {

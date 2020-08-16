@@ -17,6 +17,7 @@ signals:
 
 public slots:
     void onDataRead(const QList<SensorData>& data) {m_live_data = data;}
+    void onSensorConfig(QVector<SensorConfig> sensor_cfgs);
 
 private slots:
     void onNewConection();
@@ -27,6 +28,7 @@ private:
     QTcpServer m_server;
     QList<SensorData> m_live_data;
     QMap<QTcpSocket*,QByteArray> m_socket2data;
+    QMap<int,QString> sensor2location;
 
     void processGetRequest(QTcpSocket *socket, QString endpoint);
 

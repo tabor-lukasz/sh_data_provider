@@ -1,5 +1,7 @@
 #include "httpserver.h"
 #include <QtNetwork/QTcpSocket>
+#include <QJsonObject>
+#include <QJsonDocument>
 
 HttpServer::HttpServer(QObject *parent) : QObject(parent)
 {
@@ -11,6 +13,11 @@ void HttpServer::run()
     if (!m_server.listen(QHostAddress::Any,8008)) {
         qDebug() << m_server.serverError();
     }
+}
+
+void HttpServer::onSensorConfig(QVector<SensorConfig> sensor_cfgs)
+{
+    m_sensor_cfgs = sensor_cfgs;
 }
 
 void HttpServer::onNewConection()
@@ -57,6 +64,17 @@ void HttpServer::processGetRequest(QTcpSocket *socket, QString endpoint)
 {
     qDebug() << "processing GET:" << endpoint;
     if (endpoint.compare("/live") == 0){
-        qDebug() << socket->write("{\"aaa\": \"1\", \"bbb\": \"4\"}");
+        QJsonObject data;
+        for (const auto& d : m_live_data) {
+            data.insert(QString::number(d.sensor_id),d.value);
+        }
+        QJsonDocument doc(data);
+
+        QString ss =    QString("HTTP/1.1 200 OK\r\nContent-Type: application/json\r\n"
+                        "Content-Length: %1\r\n"
+                        "Connection: close\r\n\r\n").arg(doc.toJson(QJsonDocument::Compact).size());
+        ss += doc.toJson(QJsonDocument::Compact);
+        qDebug() << ss;
+        qDebug() << socket->write(ss.toLocal8Bit());
     }
 }
